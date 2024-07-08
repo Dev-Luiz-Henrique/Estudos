@@ -20,24 +20,3 @@ int reverse(int x){
 int main(){
     return 0;
 }
-
-
-
-int myAtoi(char* s) {
-    int sign = 1, isStart = 1;
-    long int num = 0;
-    for(int i=0; s[i]; i++){
-        // Only up to position 57 in the ASCII table, except '.'
-        if(s[i] > '9' || s[i] == '.') break; 
-        if((s[i] == '+' || s[i] == '-') && isStart == 0) break;
-        if(s[i] == ' ') continue;
-        if(s[i] == '-') sign = -1;
-        else if(s[i] != '+'){
-            num = num * 10 + (s[i] - '0');
-            if(num * sign < INT_MIN) return INT_MIN;
-            if(num > INT_MAX) return INT_MAX;
-        }
-        isStart = 0;
-    }
-    return num * sign;
-}
