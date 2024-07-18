@@ -1,21 +1,26 @@
-/*Neste problema voce devera ler 15 valores coloca-los em 2 vetores conforme estes valores forem pares ou impares. 
-So que o tamanho de cada um dos dois vetores e de 5 posicoes. Entao, cada vez que um dos dois vetores encher, 
-voce devera imprimir todo o vetor e utiliza-lo novamente para os proximos numeros que forem lidos. 
-Terminada a leitura, deve-se imprimir o conteudo que restou em cada um dos dois vetores, imprimindo primeiro os valores do vetor impar. 
-Cada vetor pode ser preenchido tantas vezes quantas for necessario.
+/*
+    Neste problema voce devera ler 15 valores coloca-los em 2 vetores conforme estes valores forem pares ou impares. 
+    
+    So que o tamanho de cada um dos dois vetores e de 5 posicoes. Entao, cada vez que um dos dois vetores encher, 
+        voce devera imprimir todo o vetor e utiliza-lo novamente para os proximos numeros que forem lidos. 
+    
+    Terminada a leitura, deve-se imprimir o conteudo que restou em cada um dos dois vetores, imprimindo primeiro os 
+        valores do vetor impar. 
+    Cada vetor pode ser preenchido tantas vezes quantas for necessario.
 
-Entrada 
-A entrada contem 15 numeros inteiros.
+    Entrada 
+        A entrada contem 15 numeros inteiros.
 
-Saida Imprima a saida conforme o exemplo abaixo.*/
+    Saida 
+        Imprima a saida conforme o exemplo abaixo.
+*/
 
 #include <stdio.h>
 #define maxVet 5
 #define numEnt 15
 
 void exibeVetor(int *v){
-    if(v[0] % 2 == 0)
-    {
+    if(v[0] % 2 == 0){
         for(int i=0; i < maxVet; i++){
         	if(v[i] == 0) break;
         	
@@ -23,8 +28,7 @@ void exibeVetor(int *v){
             v[i] = 0;
         }
     }
-    else 
-    {
+    else {
         for(int i=0; i < maxVet; i++){
         	if(v[i] == 0) break;
         	
@@ -35,7 +39,6 @@ void exibeVetor(int *v){
 }
 
 int main(){
-
     int *vPar, *vImpar;
     int iPar = 0, iImpar = 0;
     int n;
@@ -53,7 +56,6 @@ int main(){
                 exibeVetor(vPar);
                 iPar = 0;
             }
-                
         }
         else{
             vImpar[iImpar] = n;
@@ -64,7 +66,6 @@ int main(){
             }
         }
     }
-
     if (iImpar > 0)
         exibeVetor(vImpar);
     if (iPar > 0)

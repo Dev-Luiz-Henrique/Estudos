@@ -5,7 +5,7 @@ A entrada contem dois valores inteiros representando a hora de inicio e a hora d
 
 #include <stdio.h>
 
-int main() {
+int main(){
     int inicio, fim, tempo;
     scanf("%d %d", &inicio, &fim);
 
@@ -13,7 +13,7 @@ int main() {
         tempo = fim - inicio;
     else if (inicio > fim)
         tempo = 24 - inicio + fim;
-    else 
+    else
         tempo = 24;
 
     printf("O JOGO DUROU %d HORA(S)\n", tempo);

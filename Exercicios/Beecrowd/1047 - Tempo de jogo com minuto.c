@@ -1,11 +1,13 @@
-/*Leia a hora inicial, minuto inicial, hora final e minuto final de um jogo. A seguir calcule a duracao do jogo.
-Obs: O jogo tem duracaoo minima de um (1) minuto e duracao maxima de 24 horas.
+/*
+    Leia a hora inicial, minuto inicial, hora final e minuto final de um jogo. A seguir calcule a duracao do jogo.
+    Obs: O jogo tem duracaoo minima de um (1) minuto e duracao maxima de 24 horas.
 
-Entrada
-Quatro numeros inteiros representando a hora de inicio e fim do jogo.
+    Entrada
+        Quatro numeros inteiros representando a hora de inicio e fim do jogo.
 
-Saida
-Mostre a seguinte mensagem: "O JOGO DUROU XXX HORA(S) E YYY MINUTO(S)".*/
+    Saida
+        Mostre a seguinte mensagem: "O JOGO DUROU XXX HORA(S) E YYY MINUTO(S)".
+*/
 
 #include <stdio.h>
 

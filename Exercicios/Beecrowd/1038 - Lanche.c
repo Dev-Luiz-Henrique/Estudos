@@ -10,7 +10,7 @@
 
 
 // Entrada
-// O arquivo de entrada contem dois valores inteiros correspondentes ao codigo e à quantidade de um item conforme tabela acima.
+// O arquivo de entrada contem dois valores inteiros correspondentes ao codigo e a quantidade de um item conforme tabela acima.
 
 // Saida
 // O arquivo de saida deve conter a mensagem "Total: R$ " seguido pelo valor a ser pago, com 2 casas apos o ponto decimal.
