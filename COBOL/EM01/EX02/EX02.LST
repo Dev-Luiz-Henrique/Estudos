@@ -1,0 +1,103 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 05-Sep-23 15:32 Page   1
+*                                       EX02.CBL
+* Options: LIST(EX02.LST) ASMLIST(EX02.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.     EX02.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA.
+     4 INSTALLATION.   FATEC-SP.
+     5 DATE-WRITTEN.   05/09/2023.
+     6 DATE-COMPILED. 05-Sep-23 15:32.
+     7 SECURITY.  APENAS O AUTOR PODE MODIFICAR.
+     8*REMARKS  LE OS REGISTROS DO ARQUIVO DE ENTRADA
+     9*         CADALU (NUMERO, NOME, SEXO E DATA DE NASCIMENTO)
+    10*         E GRAVA NO ARQUIVO DE SAIDA CADATU (NUMERO, NOME
+    11*         E DATA DE NASCIMENTO).
+    12
+    13*////////////////////////////////////////////////////////////////
+    14 ENVIRONMENT DIVISION.
+    15 CONFIGURATION SECTION.
+    16 SOURCE-COMPUTER. HP-PC.
+    17 OBJECT-COMPUTER. HP-PC.
+    18 SPECIAL-NAMES.   DECIMAL-POINT IS COMMA.
+    19
+    20 INPUT-OUTPUT SECTION.
+    21 FILE-CONTROL.
+    22     SELECT CADALU ASSIGN TO DISK ORGANIZATION
+    23      IS LINE SEQUENTIAL.
+    24     SELECT CADATU ASSIGN TO DISK ORGANIZATION
+    25      IS LINE SEQUENTIAL.
+    26
+    27*//////////////////////////////////////////////////////////////
+    28 DATA DIVISION.
+    29 FILE SECTION.
+    30     FD CADALU LABEL RECORD ARE STANDARD
+    31      VALUE OF FILE-ID IS "CADALU.DAT".
+    32     01 REG-ENT.
+    33     02 NUM-ENT         PIC 9(05).
+    34     02 NOME-ENT        PIC X(20).
+    35     02 SEXO-ENT        PIC X(01).
+    36     02 DATA-NASCIMENTO-ENT.
+    37     03 DIA-NASCIMENTO-ENT PIC 9(02).
+    38     03 MES-NASCIMENTO-ENT PIC 9(02).
+    39     03 ANO-NASCIMENTO-ENT PIC 9(04).
+    40
+    41     FD CADATU LABEL RECORD ARE STANDARD
+    42      VALUE OF FILE-ID IS "CADATU.DAT".
+    43     01 REG-SAI.
+    44     02 NUM-SAI         PIC 9(05).
+    45     02 NOME-SAI        PIC X(20).
+    46     02 DATA-NASCIMENTO-SAI.
+    47     03 DIA-NASCIMENTO-SAI PIC 9(02).
+    48     03 MES-NASCIMENTO-SAI PIC 9(02).
+    49     03 ANO-NASCIMENTO-SAI PIC 9(04).
+    50
+    51 WORKING-STORAGE SECTION.
+    52 77 FIM-ARQ PIC X(03) VALUE "NAO".
+    53
+    54*//////////////////////////////////////////////////////////////
+    55 PROCEDURE DIVISION.
+    56 PGM-EX02.
+    57     PERFORM INICIO.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 05-Sep-23 15:32 Page   2
+*                                       EX02.CBL
+    58     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+    59     PERFORM TERMINO.
+    60     STOP RUN.
+    61
+    62 INICIO.
+    63     OPEN INPUT CADALU OUTPUT CADATU.
+    64     PERFORM LEITURA.
+    65
+    66 LEITURA.
+    67     READ CADALU AT END MOVE "SIM" TO FIM-ARQ.
+    68
+    69 PRINCIPAL.
+    70     PERFORM GRAVACAO.
+    71     PERFORM LEITURA.
+    72
+    73 GRAVACAO.
+    74     MOVE NUM-ENT TO NUM-SAI.
+    75     MOVE NOME-ENT TO NOME-SAI.
+    76     MOVE DATA-NASCIMENTO-ENT TO DATA-NASCIMENTO-SAI.
+    77     WRITE REG-SAI.
+    78
+    79 TERMINO.
+    80     CLOSE CADALU CADATU.
+    81
+    82* GRAVACAO.
+    83*     MOVE NUM-ENT TO NUM-SAI.
+    84*     MOVE NOME-ENT TO NOME-SAI.
+    85*     MOVE DIA-NASCIMENTO-ENT TO DIA-NASCIMENTO-SAI.
+    86*     MOVE MES-NASCIMENTO-ENT TO MES-NASCIMENTO-SAI.
+    87*     MOVE ANO-NASCIMENTO-ENT TO ANO-NASCIMENTO-SAI.
+    88
+    89
+    90
+    91
+    92
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1032     Code:         320     Dictionary:        1365

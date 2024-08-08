@@ -1,0 +1,89 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.    EX08.
+       AUTHOR.        LUIZ HENRIQUE DE SANTANA.
+       INSTALLATION.  FATEC-SP.
+       DATE-WRITTEN.  10/09/2023.
+       DATE-COMPILED.
+       SECURITY. APENAS O AUTOR MODIFICAR.
+      *REMARKS.  LER O ARQUIVO DE ENTRADA CADFUN (CODIGO, NOME E 
+      *          SALARIO BRUTO), CALCULAR O REAJUSTE DO SALARIO E 
+      *          GRAVAR NO ARQUIVO DE SAIDA CADSAI (CODIGO, NOME E
+      *          SALARIO REAJUSTADO).
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.  ACER-PC.
+       OBJECT-COMPUTER.  IBM-PC.
+       SPECIAL-NAMES.    DECIMAL-POINT IS COMMA.
+       
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT CADFUN ASSIGN TO DISK ORGANIZATION 
+               IS LINE SEQUENTIAL.
+           
+           SELECT CADSAI ASSIGN TO DISK ORGANIZATION 
+               IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+           FD CADFUN LABEL RECORD ARE STANDARD VALUE OF 
+               FILE-ID IS "CADFUN.DAT".
+
+           01 REG-ENT.
+           02 COD-ENT        PIC 9(05).
+           02 NOME-ENT       PIC X(20).
+           02 SAL-BRUTO-ENT  PIC 9(05)V99.
+
+           FD CADSAI LABEL RECORD ARE STANDARD VALUE OF 
+               FILE-ID IS "CADSAI.DAT".
+
+           01 REG-SAI.
+           02 COD-SAI       PIC 9(05).
+           02 NOME-SAI      PIC X(20).
+           02 SAL-REAJ-SAI  PIC 9(05)V99.
+
+       WORKING-STORAGE SECTION.
+           77 FIM-ARQ PIC X(3) VALUE "NAO".
+           77 SAL-REAJUSTADO PIC 9(05)V99 VALUE ZEROS.
+
+       PROCEDURE DIVISION.
+       PGM-EX08.
+           PERFORM INICIO.
+           PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+           PERFORM TERMINO.
+           STOP RUN.
+
+       INICIO.
+           OPEN INPUT CADFUN OUTPUT CADSAI.
+           PERFORM LEITURA.
+
+       LEITURA.
+           READ CADFUN AT END MOVE "SIM" TO FIM-ARQ.
+
+       PRINCIPAL.
+           PERFORM REAJUSTE.
+           PERFORM GRAVACAO.
+           PERFORM LEITURA.
+
+       REAJUSTE.
+           IF SAL-BRUTO-ENT NOT GREATER THAN 1000,00
+               MULTIPLY SAL-BRUTO-ENT BY 0,88 
+                   GIVING SAL-REAJUSTADO
+           ELSE
+               IF SAL-BRUTO-ENT NOT GREATER THAN 2000,00
+                   MULTIPLY SAL-BRUTO-ENT BY 0,89 
+                       GIVING SAL-REAJUSTADO 
+               ELSE
+                   MULTIPLY SAL-BRUTO-ENT BY 0,90 
+                       GIVING SAL-REAJUSTADO.
+       
+       GRAVACAO.
+           MOVE COD-ENT TO COD-SAI.
+           MOVE NOME-ENT TO NOME-SAI.
+           MOVE SAL-REAJUSTADO TO SAL-REAJ-SAI.
+           WRITE REG-SAI.
+
+       TERMINO.
+           CLOSE CADFUN CADSAI.
+               
+               

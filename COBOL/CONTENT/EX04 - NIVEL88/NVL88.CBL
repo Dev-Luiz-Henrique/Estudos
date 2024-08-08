@@ -1,0 +1,98 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. NVL88.
+       AUTHOR. LUIZ HENRIQUE / FELIPE DIAS.
+       INSTALLATION. FATEC-SP.
+       DATE-WRITTEN. 19/09/2023.
+       DATE-COMPILED.
+       SECURITY. APENAS O AUTOR PODE MODIFICA-LO.
+      *REMARKS. KFDSAJDHBFDSHBFDS.
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+           SOURCE-COMPUTER. IBM-PC.
+           OBJECT-COMPUTER. IBM-PC.
+           SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT SECTION.
+           FILE-CONTROL.
+           SELECT CADENT ASSIGN TO DISK
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT CADOK ASSIGN TO DISK
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT CADRUIM ASSIGN TO DISK
+               ORGANIZATION IS LINE SEQUENTIAL.
+        
+       DATA DIVISION.
+       FILE SECTION.
+       FD CADENT LABEL RECORD ARE STANDARD
+        VALUE OF FILE-ID IS "CAD-ENT.DAT".
+           01 REG-ENT.
+               02 COD-ENT      PIC 9(02).
+               02 NOM-ENT      PIC X(30).
+                   88 NOME-INVALIDO VALUE SPACES.
+               02 SEX-ENT      PIC X(01).
+                   88 SEXO-VALIDO VALUE "M" "m" "F" "f".
+               02 MES-ENT  PIC 9(02).
+                   88 MES-VALIDO VALUE 1 THRU 12.
+       
+       FD CADOK LABEL RECORD ARE STANDARD
+        VALUE OF FILE-ID IS "CAD-OK.DAT".
+           01 REG-OK PIC X(35).   
+
+       FD CADRUIM LABEL RECORD ARE STANDARD
+        VALUE OF FILE-ID IS "CAD-RUIM.DAT".
+           01 REG-RUIM PIC X(35).
+
+       WORKING-STORAGE SECTION.
+           77 FIM-ARQ PIC X(03) VALUE "NAO".
+           77 CH-ERRO PIC X(03) VALUE "NAO".
+
+
+       PROCEDURE DIVISION.
+       PGM-NVL88.
+           PERFORM INICIO.
+           PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+           PERFORM FIM.
+           STOP RUN.
+
+       INICIO.
+           OPEN INPUT CADENT OUTPUT CADOK CADRUIM.
+           PERFORM LEITURA.
+
+       LEITURA.
+           READ CADENT AT END MOVE "SIM" TO FIM-ARQ.
+
+       PRINCIPAL.
+           PERFORM VALIDACAO.
+           PERFORM LEITURA.
+
+       VALIDACAO.
+           MOVE "NAO" TO CH-ERRO.
+      *     IF NOME-INVALIDO
+      *         MOVE "SIM" TO CH-ERRO
+      *     ELSE
+      *         IF NOT SEXO-VALIDO
+      *             MOVE "SIM" TO CH-ERRO
+      *         ELSE IF NOT MES-VALIDO
+      *             MOVE "SIM" TO CH-ERRO.
+
+           IF NOME-INVALIDO OR NOT SEXO-VALIDO OR NOT MES-VALIDO
+              MOVE "SIM" TO CH-ERRO.
+
+           IF CH-ERRO EQUAL "SIM"
+               PERFORM GRAVA-RUIM
+           ELSE
+               PERFORM GRAVA-OK.
+
+       GRAVA-OK.
+           MOVE REG-ENT TO REG-OK.
+           WRITE REG-OK.
+       
+       GRAVA-RUIM.
+           MOVE REG-ENT TO REG-RUIM.
+           WRITE REG-RUIM.
+       
+
+       FIM.
+           CLOSE CADENT CADOK CADRUIM. 
+       

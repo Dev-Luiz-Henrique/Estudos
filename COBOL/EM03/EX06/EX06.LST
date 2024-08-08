@@ -1,0 +1,308 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   1
+*                                       EX06.CBL
+* Options: LIST(EX06.LST) ASMLIST(EX06.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.     EX06.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA
+     4                 GABRIEL GOMES DA CRUZ
+     5                 NICOLE CARVALHO FUKUSHIMA.
+     6 INSTALLATION.   FATEC-SP.
+     7 DATE-WRITTEN.   12/11/2023.
+     8 DATE-COMPILED. 13-Nov-23 17:38.
+     9 SECURITY.       APENAS O AUTOR PODE MODIFICA-LO.
+    10*REMARKS         LER O ARQUIVO DE ENTRADA CADVEND.DAT E
+    11*                REALIZAR OS CALCULOS PARA OBTER O SALARIO
+    12*                BRUTO, LIQUIDO E A COMISSAO, EXIBINDO-OS DE
+    13*                ACORDO COM A PESSOA EM QUESTAO, ORDENANDO
+    14*                POR DEPARTAMENTO E SECAO EM ORDEM ASCENDENTE.
+    15
+    16 ENVIRONMENT DIVISION.
+    17 CONFIGURATION SECTION.
+    18 OBJECT-COMPUTER.    IBM-PC.
+    19 SOURCE-COMPUTER.    IBM-PC.
+    20 SPECIAL-NAMES.      DECIMAL-POINT IS COMMA.
+    21
+    22 INPUT-OUTPUT SECTION.
+    23 FILE-CONTROL.
+    24 SELECT CADVEND ASSIGN TO DISK
+    25     ORGANIZATION IS LINE SEQUENTIAL.
+    26 SELECT TRAB ASSIGN TO DISK.
+    27 SELECT REL-PAG ASSIGN TO DISK.
+    28
+    29 DATA DIVISION.
+    30 FILE SECTION.
+    31 FD CADVEND LABEL RECORD ARE STANDARD
+    32 VALUE OF FILE-ID IS "CADVEND.DAT".
+    33 01 REG-ENT.
+    34     02 COD-DEP-ENT          PIC X(01).
+    35     02 COD-SEC-ENT          PIC X(01).
+    36     02 COD-VEN-ENT          PIC 9(05).
+    37     02 NOME-ENT             PIC X(20).
+    38     02 VENDA-ENT            PIC 9(07)V99.
+    39     02 SALARIO-ENT          PIC 9(07)V99.
+    40     02 DESCONTO-ENT         PIC 9(05)V99.
+    41
+    42 SD TRAB.
+    43 01 REG-TRAB.
+    44     02 COD-DEP-TRAB         PIC X(01).
+    45     02 COD-SEC-TRAB         PIC X(01).
+    46     02 COD-VEN-TRAB         PIC 9(05).
+    47     02 NOME-TRAB            PIC X(20).
+    48     02 VENDA-TRAB           PIC 9(07)V99.
+    49     02 SALARIO-TRAB         PIC 9(07)V99.
+    50     02 DESCONTO-TRAB        PIC 9(05)V99.
+    51
+    52 FD REL-PAG LABEL RECORD IS OMITTED.
+    53 01 REG-ATR.
+    54     02 REL-ART              PIC X(80).
+    55
+    56 WORKING-STORAGE SECTION.
+    57 77 FIM-ARQ                  PIC X(03) VALUE "NAO".
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   2
+*                                       EX06.CBL
+    58 77 PERMITE-ROD-DEP          PIC 9 VALUE 0.
+    59 77 PERMITE-ROD-SEC          PIC 9 VALUE 0.
+    60 77 CT-PAG                   PIC 99 VALUE ZEROS.
+    61 77 CT-LIN                   PIC 99 VALUE 41.
+    62
+    63 77 WCOMISSAO                PIC 9999999V99 VALUE ZEROS.
+    64 77 WSAL-LIQUIDO             PIC 9999999V99 VALUE ZEROS.
+    65 77 WSAL-BRUTO               PIC 9999999V99 VALUE ZEROS.
+    66
+    67 77 WDEPARTAMENTO            PIC X VALUE SPACE.
+    68 77 WSECAO                   PIC X VALUE SPACE.
+    69 77 WSAL-SEC                 PIC 9(09)V99 VALUE ZEROES.
+    70 77 WSAL-DEP                 PIC 9(12)V99 VALUE ZEROES.
+    71
+    72 01 CAB-TITULO.
+    73     02 FILLER           PIC X(26) VALUE SPACES.
+    74     02 FILLER           PIC X(23)
+    75      VALUE "RELATÓRIO DE PAGAMENTO".
+    76     02 FILLER           PIC X(23) VALUE SPACES.
+    77     02 FILLER           PIC X(6) VALUE "PÁG. ".
+    78     02 VAR-PAG          PIC 9(02).
+    79
+    80 01 CAB-DEPARTAMENTO.
+    81     02 FILLER           PIC X(16) VALUE "DEPARTAMENTO = ".
+    82     02 VAR-DEP-REL      PIC 9(01).
+    83     02 FILLER           PIC X(63) VALUE SPACES.
+    84
+    85 01 CAB-SECAO.
+    86     02 FILLER           PIC X(07) VALUE "SEÇÃO".
+    87     02 FILLER           PIC X(11) VALUE "        = ".
+    88     02 VAR-SEC-REL      PIC 9(01).
+    89     02 FILLER           PIC X(61) VALUE SPACES.
+    90
+    91 01 CAB-DADOS.
+    92     02 FILLER           PIC X(06) VALUE "CODIGO".
+    93     02 FILLER           PIC X(09) VALUE SPACES.
+    94     02 FILLER           PIC X(04) VALUE "NOME".
+    95     02 FILLER           PIC X(08) VALUE SPACES.
+    96     02 FILLER           PIC X(08) VALUE "SAL.FIXO".
+    97     02 FILLER           PIC X(03) VALUE SPACES.
+    98     02 FILLER           PIC X(08) VALUE "COMISSAO".
+    99     02 FILLER           PIC X(02) VALUE SPACES.
+   100     02 FILLER           PIC X(09) VALUE "SAL.BRUTO".
+   101     02 FILLER           PIC X(02) VALUE SPACES.
+   102     02 FILLER           PIC X(08) VALUE "DESCONTO".
+   103     02 FILLER           PIC X(01) VALUE SPACES.
+   104     02 FILLER           PIC X(11) VALUE "SAL.LIQUIDO".
+   105
+   106 01 DETALHE.
+   107     02 COD-REL          PIC 9(05).
+   108     02 FILLER           PIC X(01) VALUE SPACES.
+   109     02 NOME-REL         PIC X(20).
+   110     02 FILLER           PIC X(01) VALUE SPACES.
+   111     02 SAL-FIXO-REL     PIC ZZZZZZ9,99.
+   112     02 FILLER           PIC X(01) VALUE SPACES.
+   113     02 COMISSAO-REL     PIC ZZZZZZ9,99.
+   114     02 FILLER           PIC X(01) VALUE SPACES.
+   115     02 SAL-BRUTO-REL    PIC ZZZZZZ9,99.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   3
+*                                       EX06.CBL
+   116     02 FILLER           PIC X(01) VALUE SPACES.
+   117     02 DESCONTO-REL     PIC ZZZZ9,99.
+   118     02 FILLER           PIC X(01) VALUE SPACES.
+   119     02 SAL-LIQ-REL      PIC ZZZZZZ9,99.
+   120     02 FILLER           PIC X(05) VALUE SPACES.
+   121
+   122 01 RODAPE-SAL-SEC.
+   123     02 FILLER           PIC X(19) VALUE "TOTAL DE SALÁRIOS ".
+   124     02 FILLER           PIC X(12) VALUE "DA SEÇÃO: ".
+   125     02 SAL-SEC-REL      PIC 999999999,99.
+   126     02 FILLER           PIC X(38) VALUE SPACES.
+   127
+   128 01 RODAPE-SAL-DEP.
+   129     02 FILLER           PIC X(19) VALUE "TOTAL DE SALÁRIOS ".
+   130     02 FILLER           PIC X(17) VALUE "DO DEPARTAMENTO: ".
+   131     02 SAL-DEP-REL     PIC 999999999999,99.
+   132     02 FILLER           PIC X(29) VALUE SPACES.
+   133
+   134
+   135 PROCEDURE DIVISION.
+   136 PGM-EX06.
+   137     SORT TRAB ASCENDING KEY COD-DEP-TRAB,
+   138         COD-SEC-TRAB, COD-VEN-TRAB
+   139         USING CADVEND OUTPUT PROCEDURE ROT-SAI.
+   140     STOP RUN.
+   141
+   142*================================================================*
+   143
+   144 ROT-SAI SECTION.
+   145     PERFORM INICIO.
+   146     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+   147     PERFORM FIM.
+   148
+   149*================================================================*
+   150
+   151 INICIO SECTION.
+   152     OPEN OUTPUT REL-PAG.
+   153     PERFORM LEITURA.
+   154
+   155*================================================================*
+   156
+   157 LEITURA SECTION.
+   158     RETURN TRAB AT END MOVE "SIM" TO FIM-ARQ.
+   159
+   160*================================================================*
+   161
+   162 PRINCIPAL SECTION.
+   163     PERFORM CALCULO-SAL.
+   164     PERFORM IMPRESSAO.
+   165     PERFORM LEITURA.
+   166
+   167*================================================================*
+   168
+   169 CALCULO-SAL SECTION.
+   170
+   171* CALCULO COMISSAO
+   172     IF VENDA-TRAB NOT GREATER THAN 1000,00
+   173         MULTIPLY VENDA-TRAB BY 0,05 GIVING WCOMISSAO
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   4
+*                                       EX06.CBL
+   174
+   175     ELSE
+   176         IF VENDA-TRAB GREATER THAN 1000,00 AND
+   177            VENDA-TRAB NOT GREATER THAN 3000,00
+   178             MULTIPLY VENDA-TRAB BY 0,10 GIVING WCOMISSAO
+   179
+   180         ELSE
+   181             MULTIPLY VENDA-TRAB BY 0,15 GIVING WCOMISSAO.
+   182
+   183* CALCULO SALARIO BRUTO
+   184     ADD SALARIO-TRAB WCOMISSAO GIVING WSAL-BRUTO.
+   185
+   186* CALCULO SALARIO LIQUIDO
+   187     SUBTRACT WSAL-BRUTO FROM DESCONTO-TRAB GIVING WSAL-LIQUIDO.
+   188
+   189*================================================================*
+   190
+   191 IMPRESSAO SECTION.
+   192     IF CT-LIN GREATER THAN 40
+   193         PERFORM IMP-CAB-TIT.
+   194
+   195     IF WDEPARTAMENTO NOT EQUAL COD-DEP-TRAB
+   196         IF PERMITE-ROD-DEP EQUAL 1
+   197             PERFORM IMP-ROD-SAL-SEC
+   198             PERFORM IMP-ROD-SAL-DEP
+   199             MOVE 0 TO PERMITE-ROD-SEC
+   200         END-IF
+   201
+   202         PERFORM IMP-CAB-DEP
+   203         MOVE COD-DEP-TRAB TO WDEPARTAMENTO
+   204
+   205         MOVE 1 TO PERMITE-ROD-DEP
+   206     END-IF.
+   207
+   208     IF WSECAO NOT EQUAL COD-SEC-TRAB
+   209         IF PERMITE-ROD-SEC EQUAL 1
+   210             PERFORM IMP-ROD-SAL-SEC
+   211         ELSE
+   212             MOVE 1 TO PERMITE-ROD-SEC
+   213         END-IF
+   214
+   215         PERFORM IMP-CAB-SEC
+   216         MOVE COD-SEC-TRAB TO WSECAO
+   217         PERFORM IMP-CAB-DET
+   218     END-IF.
+   219
+   220     PERFORM IMP-DET.
+   221
+   222*================================================================*
+   223
+   224 IMP-CAB-TIT SECTION.
+   225     ADD 1 TO CT-PAG.
+   226     MOVE CT-PAG TO VAR-PAG.
+   227     MOVE SPACES TO REG-ATR.
+   228     WRITE REG-ATR AFTER ADVANCING PAGE.
+   229     WRITE REG-ATR FROM CAB-TITULO AFTER ADVANCING 2 LINES.
+   230     MOVE ZEROES TO CT-LIN.
+   231
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   5
+*                                       EX06.CBL
+   232*================================================================*
+   233
+   234 IMP-CAB-SEC SECTION.
+   235     MOVE COD-SEC-TRAB TO VAR-SEC-REL.
+   236     WRITE REG-ATR FROM CAB-SECAO
+   237         AFTER ADVANCING 2 LINES.
+   238
+   239*================================================================*
+   240
+   241 IMP-CAB-DEP SECTION.
+   242     IF PERMITE-ROD-DEP EQUAL 1
+   243         PERFORM IMP-CAB-TIT.
+   244
+   245     MOVE COD-DEP-TRAB TO VAR-DEP-REL.
+   246     WRITE REG-ATR FROM CAB-DEPARTAMENTO
+   247         AFTER ADVANCING 2 LINES.
+   248
+   249*================================================================*
+   250
+   251 IMP-CAB-DET SECTION.
+   252     WRITE REG-ATR FROM CAB-DADOS AFTER ADVANCING 2 LINES.
+   253
+   254*================================================================*
+   255
+   256 IMP-DET SECTION.
+   257     MOVE COD-DEP-TRAB TO COD-REL.
+   258     MOVE NOME-TRAB TO NOME-REL.
+   259     MOVE SALARIO-TRAB TO SAL-FIXO-REL.
+   260     MOVE WCOMISSAO TO COMISSAO-REL.
+   261     MOVE WSAL-BRUTO TO SAL-BRUTO-REL.
+   262     MOVE DESCONTO-TRAB TO DESCONTO-REL.
+   263     MOVE WSAL-LIQUIDO TO SAL-LIQ-REL.
+   264     WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE.
+   265     ADD WSAL-LIQUIDO TO WSAL-SEC.
+   266
+   267*================================================================*
+   268
+   269 IMP-ROD-SAL-SEC SECTION.
+   270     MOVE WSAL-SEC TO SAL-SEC-REL.
+   271     WRITE REG-ATR FROM RODAPE-SAL-SEC
+   272         AFTER ADVANCING 2 LINES
+   273     ADD WSAL-SEC TO WSAL-DEP.
+   274     MOVE ZEROS TO WSAL-SEC.
+   275
+   276*================================================================*
+   277
+   278 IMP-ROD-SAL-DEP SECTION.
+   279     MOVE WSAL-DEP TO SAL-DEP-REL.
+   280     WRITE REG-ATR FROM RODAPE-SAL-DEP
+   281         AFTER ADVANCING 1 LINE
+   282     MOVE ZEROS TO WSAL-DEP.
+   283
+   284*================================================================*
+   285
+   286 FIM SECTION.
+   287     CLOSE REL-PAG.
+   288
+   289*================================================================*
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   6
+*                                       EX06.CBL
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        2052     Code:        1180     Dictionary:        3658

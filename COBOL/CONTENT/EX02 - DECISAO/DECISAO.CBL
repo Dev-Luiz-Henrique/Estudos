@@ -1,0 +1,68 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. DECISAO.
+       AUTHOR. LUIZ HENRIQUE DE SANTANA / CARLOS EDUARDO.
+       INSTALLATION. FATEC-SP.
+       DATE-WRITTEN. 29/08/2023.
+       DATE-COMPILED.
+       SECURITY. APENAS O AUTOR PODE MODIFICAR.
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+           SOURCE-COMPUTER.    HP-PC.
+           OBJECT-COMPUTER.    HP-PC.
+           SPECIAL-NAMES.      DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT CAD-ENT ASSIGN TO DISK ORGANIZATION IS 
+               LINE SEQUENTIAL.
+
+           SELECT CAD-SAI ASSIGN TO DISK ORGANIZATION IS 
+               LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD CAD-ENT 
+           LABEL RECORD ARE STANDARD 
+           VALUE OF FILE-ID IS "CAD-ENT.DAT".
+           01 REG-ENT.
+               02 CODIGO-ENT PIC 9(04).
+               02 NOME-ENT   PIC X(30).
+               02 SEXO-ENT   PIC X(01).
+
+       FD CAD-SAI 
+           LABEL RECORD ARE STANDARD 
+           VALUE OF FILE-ID IS "CAD-SAI.DAT".
+           01 REG-SAI.
+               02 CODIGO-SAI PIC 9(04).
+               02 NOME-SAI   PIC X(30).
+
+       WORKING-STORAGE SECTION.
+           77 FIM-ARQ PIC X(03) VALUE "NAO".
+
+       PROCEDURE DIVISION.
+       PGM-DECISAO.
+           PERFORM INICIO.    
+           PERFORM PRINCIPAL
+               UNTIL FIM-ARQ EQUAL "SIM".
+           PERFORM TERMINO.
+           STOP RUN. 
+
+       INICIO.
+           OPEN INPUT CAD-ENT 
+               OUTPUT CAD-SAI.
+           PERFORM LEITURA.
+       LEITURA.
+           READ CAD-ENT 
+               AT END MOVE "SIM" TO FIM-ARQ.  
+       PRINCIPAL.
+           PERFORM SELECAO.
+           PERFORM LEITURA.
+       SELECAO.
+           IF SEXO-ENT EQUAL "F" OR "f"
+               PERFORM GRAVACAO.
+       GRAVACAO.
+           MOVE CODIGO-ENT TO CODIGO-SAI.
+           MOVE NOME-ENT TO NOME-SAI.
+           WRITE REG-SAI.
+       TERMINO.
+           CLOSE CAD-ENT CAD-SAI.

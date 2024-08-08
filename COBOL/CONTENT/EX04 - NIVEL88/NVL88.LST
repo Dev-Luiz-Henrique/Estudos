@@ -1,0 +1,109 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 19-Sep-23 10:44 Page   1
+*                                      NVL88.CBL
+* Options: LIST(NVL88.LST) ASMLIST(NVL88.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. NVL88.
+     3 AUTHOR. LUIZ HENRIQUE / FELIPE DIAS.
+     4 INSTALLATION. FATEC-SP.
+     5 DATE-WRITTEN. 19/09/2023.
+     6 DATE-COMPILED. 19-Sep-23 10:44.
+     7 SECURITY. APENAS O AUTOR PODE MODIFICA-LO.
+     8*REMARKS. KFDSAJDHBFDSHBFDS.
+     9
+    10 ENVIRONMENT DIVISION.
+    11 CONFIGURATION SECTION.
+    12     SOURCE-COMPUTER. IBM-PC.
+    13     OBJECT-COMPUTER. IBM-PC.
+    14     SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    15
+    16 INPUT-OUTPUT SECTION.
+    17     FILE-CONTROL.
+    18     SELECT CADENT ASSIGN TO DISK
+    19         ORGANIZATION IS LINE SEQUENTIAL.
+    20     SELECT CADOK ASSIGN TO DISK
+    21         ORGANIZATION IS LINE SEQUENTIAL.
+    22     SELECT CADRUIM ASSIGN TO DISK
+    23         ORGANIZATION IS LINE SEQUENTIAL.
+    24
+    25 DATA DIVISION.
+    26 FILE SECTION.
+    27 FD CADENT LABEL RECORD ARE STANDARD
+    28  VALUE OF FILE-ID IS "CAD-ENT.DAT".
+    29     01 REG-ENT.
+    30         02 COD-ENT      PIC 9(02).
+    31         02 NOM-ENT      PIC X(30).
+    32             88 NOME-INVALIDO VALUE SPACES.
+    33         02 SEX-ENT      PIC X(01).
+    34             88 SEXO-VALIDO VALUE "M" "m" "F" "f".
+    35         02 MES-ENT  PIC 9(02).
+    36             88 MES-VALIDO VALUE 1 THRU 12.
+    37
+    38 FD CADOK LABEL RECORD ARE STANDARD
+    39  VALUE OF FILE-ID IS "CAD-OK.DAT".
+    40     01 REG-OK PIC X(35).
+    41
+    42 FD CADRUIM LABEL RECORD ARE STANDARD
+    43  VALUE OF FILE-ID IS "CAD-RUIM.DAT".
+    44     01 REG-RUIM PIC X(35).
+    45
+    46 WORKING-STORAGE SECTION.
+    47     77 FIM-ARQ PIC X(03) VALUE "NAO".
+    48     77 CH-ERRO PIC X(03) VALUE "NAO".
+    49
+    50
+    51 PROCEDURE DIVISION.
+    52 PGM-NVL88.
+    53     PERFORM INICIO.
+    54     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+    55     PERFORM FIM.
+    56     STOP RUN.
+    57
+* Microsoft COBOL Version 4.5        L2.4 revision 002 19-Sep-23 10:44 Page   2
+*                                      NVL88.CBL
+    58 INICIO.
+    59     OPEN INPUT CADENT OUTPUT CADOK CADRUIM.
+    60     PERFORM LEITURA.
+    61
+    62 LEITURA.
+    63     READ CADENT AT END MOVE "SIM" TO FIM-ARQ.
+    64
+    65 PRINCIPAL.
+    66     PERFORM VALIDACAO.
+    67     PERFORM LEITURA.
+    68
+    69 VALIDACAO.
+    70     MOVE "NAO" TO CH-ERRO.
+    71*     IF NOME-INVALIDO
+    72*         MOVE "SIM" TO CH-ERRO
+    73*     ELSE
+    74*         IF NOT SEXO-VALIDO
+    75*             MOVE "SIM" TO CH-ERRO
+    76*         ELSE IF NOT MES-VALIDO
+    77*             MOVE "SIM" TO CH-ERRO.
+    78
+    79     IF NOME-INVALIDO OR NOT SEXO-VALIDO OR NOT MES-VALIDO
+    80        MOVE "SIM" TO CH-ERRO.
+    81
+    82     IF CH-ERRO EQUAL "SIM"
+    83         PERFORM GRAVA-RUIM
+    84     ELSE
+    85         PERFORM GRAVA-OK.
+    86
+    87 GRAVA-OK.
+    88     MOVE REG-ENT TO REG-OK.
+    89     WRITE REG-OK.
+    90
+    91 GRAVA-RUIM.
+    92     MOVE REG-ENT TO REG-RUIM.
+    93     WRITE REG-RUIM.
+    94
+    95
+    96 FIM.
+    97     CLOSE CADENT CADOK CADRUIM.
+    98
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1248     Code:         544     Dictionary:        1521

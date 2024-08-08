@@ -1,0 +1,116 @@
+                                                                                
+
+                          RELATÓRIO DE PAGAMENTO                       PÁG. 01
+
+DEPARTAMENTO =  1                                                               
+
+SEÇÃO        =  1                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00001 Natalia Pereira        60000,00    7500,00   67500,00  1000,00   66500,00 
+00001 Sebastiao Da Silva     20000,00    1500,00   21500,00   300,00   21200,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000087700,00                                     
+
+SEÇÃO        =  2                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00001 Leonardo Almeida        9000,00  450000,00  459000,00  7000,00  452000,00 
+00001 Francisco Oliveira    300000,00   10500,00  310500,00   400,00  310100,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000762100,00                                     
+
+SEÇÃO        =  3                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00001 Valentina Ribeiro      90000,00   90000,00  180000,00   700,00  179300,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000179300,00                                     
+TOTAL DE SALÁRIOS DO DEPARTAMENTO: 000001029100,00                                                                                                             
+
+                          RELATÓRIO DE PAGAMENTO                       PÁG. 02
+
+DEPARTAMENTO =  2                                                               
+
+SEÇÃO        =  1                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00002 Marcelo Rodrigue        6000,50    6000,00   12000,50  3000,50    9000,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000009000,00                                     
+
+SEÇÃO        =  2                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00002 Vanessa Rodrigues       2000,50    7500,07    9500,57   600,50    8900,07 
+00002 Beatriz Oliveira       70000,50   10500,07   80500,57   300,00   80200,57 
+00002 Patricia Santos         2000,00   75000,07   77000,07  4000,00   73000,07 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000162100,71                                     
+
+SEÇÃO        =  3                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00002 Alessandro Ferreira     1000,00    1500,00    2500,00   200,50    2299,50 
+00002 Joao Victor Alves        400,00      20,00     420,00   600,00     180,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000002479,50                                     
+
+SEÇÃO        =  4                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00002 Rafael Martins          4000,00   60000,00   64000,00    70,00   63930,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000063930,00                                     
+TOTAL DE SALÁRIOS DO DEPARTAMENTO: 000000237510,21                                                                                                             
+
+                          RELATÓRIO DE PAGAMENTO                       PÁG. 03
+
+DEPARTAMENTO =  3                                                               
+
+SEÇÃO        =  1                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00003 Larissa Fernande      200000,00    3000,00  203000,00  9000,00  194000,00 
+00003 Guilherme Santos      100000,00      45,00  100045,00   100,50   99944,50 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000293944,50                                     
+
+SEÇÃO        =  2                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00003 Vinicius Martins        3000,00      20,02    3020,02   400,00    2620,02 
+00003 Isabella Pereira       90000,00       1,50   90001,50  9000,50   81001,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000083621,02                                     
+
+SEÇÃO        =  3                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00003 Luiza Fernandes        34000,00  120045,00  154045,00  3000,00  151045,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000151045,00                                     
+TOTAL DE SALÁRIOS DO DEPARTAMENTO: 000000528610,52                                                                                                             
+
+                          RELATÓRIO DE PAGAMENTO                       PÁG. 04
+
+DEPARTAMENTO =  4                                                               
+
+SEÇÃO        =  2                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00004 Lucas Pereira        3000000,00  300000,00 3300000,00 90000,00 3210000,00 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 003210000,00                                     
+
+SEÇÃO        =  3                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00004 Bruna Souza             6000,00   75000,00   81000,00  2000,50   78999,50 
+
+TOTAL DE SALÁRIOS DA SEÇÃO: 000078999,50                                     
+
+SEÇÃO        =  4                                                             
+
+CODIGO         NOME        SAL.FIXO   COMISSAO  SAL.BRUTO  DESCONTO SAL.LIQUIDO 
+00004 Fernando Costa        300000,00   13500,00  313500,00   800,00  312700,00 

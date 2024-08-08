@@ -1,0 +1,289 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   1
+*                                       EX05.CBL
+* Options: LIST(EX05.LST) ASMLIST(EX05.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. EX05.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA
+     4                 GABRIEL GOMES DA CRUZ
+     5                 NICOLE CARVALHO FUKUSHIMA.
+     6 INSTALLATION.   FATEC-SP.
+     7 DATE-WRITTEN.   11/11/2023.
+     8 DATE-COMPILED. 13-Nov-23 17:38.
+     9 SECURITY.       APENAS O AUTOR PODE MODIFICAR.
+    10*REMARKS.        LER O ARQUIVO DE ENTRADA VENDA.DAT E
+    11*                CLASSIFICAR OS DADOS EM ORDEM ASCENDENTE POR
+    12*                ESTADO E NUMERO DE VENDEDOR E IMPRIMIR O
+    13*                RESULTADO NO RELATORIO DE SAIDA RELVENDA.
+    14
+    15 ENVIRONMENT DIVISION.
+    16 CONFIGURATION SECTION.
+    17     SOURCE-COMPUTER. DESKTOP-PC.
+    18     OBJECT-COMPUTER. DESKTOP-PC.
+    19     SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    20
+    21 INPUT-OUTPUT SECTION.
+    22 FILE-CONTROL.
+    23 SELECT ARQVENDA ASSIGN TO DISK
+    24     ORGANIZATION IS LINE SEQUENTIAL.
+    25
+    26 SELECT RELVENDA ASSIGN TO DISK
+    27     ORGANIZATION IS LINE SEQUENTIAL.
+    28
+    29 SELECT TRAB ASSIGN TO DISK.
+    30
+    31 DATA DIVISION.
+    32 FILE SECTION.
+    33
+    34 FD ARQVENDA LABEL RECORD ARE STANDARD
+    35  VALUE OF FILE-ID IS "VENDA.DAT".
+    36 01 REG-ENT.
+    37     02 ESTADO-ENT          PIC X(02).
+    38     02 NR-VENDEDOR         PIC 9(05).
+    39     02 NOME-VENDEDOR       PIC X(20).
+    40     02 VALOR-VENDA         PIC 9(07)V99.
+    41
+    42 SD TRAB.
+    43 01 REG-TRAB.
+    44     02 ESTADO-TRAB        PIC X(02).
+    45     02 NR-VENDEDOR-TRAB   PIC 9(05).
+    46     02 NOME-VENDEDOR-TRAB PIC X(20).
+    47     02 VALOR-VENDA-TRAB   PIC 9(07)V99.
+    48
+    49 FD RELVENDA LABEL RECORD ARE OMITTED.
+    50 01 REG-ATR.
+    51     02 REL-ATR PIC X(80).
+    52
+    53 WORKING-STORAGE SECTION.
+    54 77 FIM-ARQ PIC X(03) VALUE "NAO".
+    55 77 CT-I PIC 99 VALUE 1.
+    56 77 CT-LIN PIC 99 VALUE 21.
+    57 77 CT-PAG PIC 99 VALUE ZEROES.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   2
+*                                       EX05.CBL
+    58
+    59 77 WNR-VENDEDOR PIC 9(05) VALUE ZEROES.
+    60 77 W-ESTADO PIC X(02) VALUE SPACES.
+    61
+    62 77 WTOT-ESTADO PIC 9(07)V99.
+    63 77 WTOT-VENDEDOR PIC 9(07)V99.
+    64 77 WTOT-COMP PIC 9(07)V99.
+    65
+    66 01 CAB-01.
+    67     02 FILLER PIC X(19) VALUE SPACES.
+    68     02 FILLER PIC X(35) VALUE
+    69       "VENDAS TOTAIS POR ESTADO - VENDEDOR".
+    70     02 FILLER PIC X(20) VALUE SPACES.
+    71     02 FILLER PIC X(04) VALUE "PAG.".
+    72     02 VAR-PAG PIC 9(02) VALUE ZEROES.
+    73
+    74 01 CAB-02.
+    75     02 FILLER PIC X(08) VALUE "ESTADO: ".
+    76     02 ESTADO-CAB PIC X(19).
+    77     02 FILLER PIC X(53) VALUE SPACES.
+    78
+    79 01 CAB-03.
+    80     02 FILLER PIC X(05) VALUE SPACES.
+    81     02 FILLER PIC X(15) VALUE "NRO DO VENDEDOR".
+    82     02 FILLER PIC X(12) VALUE SPACES.
+    83     02 FILLER PIC X(16) VALUE "NOME DO VENDEDOR".
+    84     02 FILLER PIC X(18) VALUE SPACES.
+    85     02 FILLER PIC X(14) VALUE "VALOR DA VENDA".
+    86
+    87 01 DET-01.
+    88     02 FILLER PIC X(10) VALUE SPACES.
+    89     02 NRO-RELAT PIC X(05).
+    90     02 FILLER PIC X(16) VALUE SPACES.
+    91     02 NOME-RELAT PIC X(20).
+    92     02 FILLER PIC X(19) VALUE SPACES.
+    93     02 VENDA-RELAT PIC 9(07)V99.
+    94     02 FILLER PIC X(03) VALUE SPACES.
+    95
+    96 01 RODAPE-01.
+    97     02 FILLER PIC X(52) VALUE SPACES.
+    98     02 FILLER PIC X(19) VALUE "TOTAL DO VENDEDOR: ".
+    99     02 TOT-VENDA PIC 9(07)V99.
+   100
+   101 01 RODAPE-02.
+   102     02 FILLER PIC X(54) VALUE SPACES.
+   103     02 FILLER PIC X(17) VALUE "TOTAL DO ESTADO: ".
+   104     02 TOT-ESTADO PIC 9(07)V99.
+   105
+   106 01 RODAPE-03.
+   107     02 FILLER PIC X(51) VALUE SPACES.
+   108     02 FILLER PIC X(20) VALUE "TOTAL DA COMPANHIA: ".
+   109     02 TOT-COMP PIC 9(07)V99.
+   110
+   111 01 TABELA.
+   112   02 TAB-SIGLAS-ESTADOS.
+   113     03 FILLER PIC X(21) VALUE "ACACRE               ".
+   114     03 FILLER PIC X(21) VALUE "ALALAGOAS            ".
+   115     03 FILLER PIC X(21) VALUE "AMAMAZONAS           ".
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   3
+*                                       EX05.CBL
+   116     03 FILLER PIC X(21) VALUE "APAMAPA              ".
+   117     03 FILLER PIC X(21) VALUE "BABAHIA              ".
+   118     03 FILLER PIC X(21) VALUE "CECEARA              ".
+   119     03 FILLER PIC X(21) VALUE "DFDISTRITO FEDERAL   ".
+   120     03 FILLER PIC X(21) VALUE "ESESPIRITO SANTO     ".
+   121     03 FILLER PIC X(21) VALUE "GOGOIAS              ".
+   122     03 FILLER PIC X(21) VALUE "MAMARANHAO           ".
+   123     03 FILLER PIC X(21) VALUE "MGMINAS GERAIS       ".
+   124     03 FILLER PIC X(21) VALUE "MSMATO GROSSO DO SUL ".
+   125     03 FILLER PIC X(21) VALUE "MTMATO GROSSO        ".
+   126     03 FILLER PIC X(21) VALUE "PAPARA               ".
+   127     03 FILLER PIC X(21) VALUE "PBPARAIBA            ".
+   128     03 FILLER PIC X(21) VALUE "PEPERNAMBUCO         ".
+   129     03 FILLER PIC X(21) VALUE "PIPIAUI              ".
+   130     03 FILLER PIC X(21) VALUE "PRPARANA             ".
+   131     03 FILLER PIC X(21) VALUE "RJRIO DE JANEIRO     ".
+   132     03 FILLER PIC X(21) VALUE "RNRIO GRANDE DO NORTE".
+   133     03 FILLER PIC X(21) VALUE "RORONDONIA           ".
+   134     03 FILLER PIC X(21) VALUE "RRRORAIMA            ".
+   135     03 FILLER PIC X(21) VALUE "RSRIO GRANDE DO SUL  ".
+   136     03 FILLER PIC X(21) VALUE "SCSANTA CATARINA     ".
+   137     03 FILLER PIC X(21) VALUE "SESERGIPE            ".
+   138     03 FILLER PIC X(21) VALUE "SPSAO PAULO          ".
+   139     03 FILLER PIC X(21) VALUE "TOTOCANTINS          ".
+   140
+   141 01 TAB-ESTADOS REDEFINES TABELA OCCURS 27 TIMES.
+   142     02 SIGLA  PIC X(02).
+   143     02 ESTADO PIC X(19).
+   144
+   145 PROCEDURE DIVISION.
+   146 PGM-EX5.
+   147     SORT TRAB
+   148      ASCENDING KEY ESTADO-TRAB
+   149      ASCENDING KEY NR-VENDEDOR-TRAB
+   150      USING ARQVENDA
+   151      OUTPUT PROCEDURE ROT-SAIDA.
+   152     STOP RUN.
+   153
+   154*================================================================*
+   155
+   156 ROT-SAIDA SECTION.
+   157     PERFORM INICIO.
+   158     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+   159     PERFORM FIM.
+   160
+   161*================================================================*
+   162
+   163 INICIO SECTION.
+   164     OPEN OUTPUT RELVENDA.
+   165     PERFORM LEITURA.
+   166
+   167*================================================================*
+   168
+   169 LEITURA SECTION.
+   170     RETURN TRAB AT END MOVE "SIM" TO FIM-ARQ.
+   171
+   172*================================================================*
+   173
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   4
+*                                       EX05.CBL
+   174 PRINCIPAL SECTION.
+   175     PERFORM IMPRESSAO.
+   176     PERFORM LEITURA.
+   177
+   178*================================================================*
+   179
+   180 IMPRESSAO SECTION.
+   181     IF CT-LIN GREATER THAN 20
+   182         PERFORM CABECALHO.
+   183
+   184     IF ESTADO-TRAB NOT EQUAL W-ESTADO
+   185         PERFORM IMP-RODAPE-VEND
+   186         MOVE 0 TO WNR-VENDEDOR
+   187
+   188         PERFORM IMP-RODAPE-ESTD
+   189         PERFORM IMP-CAB-ESTADO
+   190         MOVE ESTADO-TRAB TO W-ESTADO
+   191     END-IF.
+   192
+   193     IF NR-VENDEDOR-TRAB NOT EQUAL WNR-VENDEDOR
+   194         PERFORM IMP-RODAPE-VEND
+   195         MOVE NR-VENDEDOR-TRAB TO WNR-VENDEDOR
+   196
+   197         WRITE REG-ATR FROM CAB-03 AFTER ADVANCING 2 LINES
+   198
+   199         MOVE NR-VENDEDOR-TRAB TO NRO-RELAT
+   200         MOVE NOME-VENDEDOR-TRAB TO NOME-RELAT
+   201         PERFORM IMP-DET
+   202         MOVE ALL SPACES TO NRO-RELAT
+   203         MOVE ALL SPACES TO NOME-RELAT
+   204     ELSE
+   205         PERFORM IMP-DET.
+   206
+   207*================================================================*
+   208
+   209 IMP-DET SECTION.
+   210     ADD   VALOR-VENDA-TRAB TO WTOT-VENDEDOR.
+   211     ADD   VALOR-VENDA-TRAB TO WTOT-ESTADO.
+   212     ADD   VALOR-VENDA-TRAB TO WTOT-COMP.
+   213     MOVE  VALOR-VENDA-TRAB TO VENDA-RELAT.
+   214     WRITE REG-ATR FROM DET-01 AFTER ADVANCING 1 LINE.
+   215     ADD 1 TO CT-LIN.
+   216
+   217*================================================================*
+   218
+   219 IMP-CAB-ESTADO SECTION.
+   220     PERFORM BUSCA-ESTADO UNTIL CT-I GREATER THAN 27.
+   221     MOVE 1 TO CT-I.
+   222     WRITE REG-ATR FROM CAB-02 AFTER ADVANCING 2 LINES.
+   223
+   224*================================================================*
+   225
+   226 BUSCA-ESTADO SECTION.
+   227     IF SIGLA(CT-I) EQUAL ESTADO-TRAB
+   228         MOVE ESTADO(CT-I) TO ESTADO-CAB
+   229         MOVE 99 TO CT-I
+   230     ELSE
+   231         ADD 1 TO CT-I.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 17:38 Page   5
+*                                       EX05.CBL
+   232         IF CT-I EQUAL 27
+   233             MOVE "ESTADO INVALIDO    " TO ESTADO-CAB.
+   234
+   235*================================================================*
+   236
+   237 CABECALHO SECTION.
+   238     ADD 1 TO CT-PAG.
+   239     MOVE CT-PAG TO VAR-PAG.
+   240     MOVE SPACES TO REG-ATR.
+   241     WRITE REG-ATR FROM CAB-01 AFTER ADVANCING 2 LINES.
+   242     MOVE ZEROES TO CT-LIN.
+   243
+   244*================================================================*
+   245
+   246 IMP-RODAPE-VEND SECTION.
+   247     IF WNR-VENDEDOR NOT EQUAL 0
+   248         MOVE WTOT-VENDEDOR TO TOT-VENDA
+   249         WRITE REG-ATR FROM RODAPE-01 AFTER ADVANCING 2 LINES
+   250         MOVE ZEROES TO WTOT-VENDEDOR.
+   251
+   252*================================================================*
+   253
+   254 IMP-RODAPE-ESTD SECTION.
+   255     IF W-ESTADO NOT EQUAL SPACES
+   256         MOVE WTOT-ESTADO TO TOT-ESTADO
+   257         WRITE REG-ATR FROM RODAPE-02 AFTER ADVANCING 2 LINES
+   258         MOVE ZEROES TO TOT-ESTADO
+   259         MOVE ZEROES TO WTOT-ESTADO.
+   260*================================================================*
+   261
+   262 IMP-RODAPE-COMP SECTION.
+   263     MOVE WTOT-COMP TO TOT-COMP.
+   264     WRITE REG-ATR FROM RODAPE-03 AFTER ADVANCING 2 LINES.
+   265
+   266*================================================================*
+   267
+   268 FIM SECTION.
+   269     PERFORM IMP-RODAPE-VEND.
+   270     PERFORM IMP-RODAPE-ESTD.
+   271     PERFORM IMP-RODAPE-COMP.
+   272     CLOSE RELVENDA.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        2532     Code:        1072     Dictionary:        3240

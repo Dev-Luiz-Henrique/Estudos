@@ -1,0 +1,136 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 24-Nov-23 12:56 Page   1
+*                                       EX01.CBL
+* Options: LIST(EX01.LST) ASMLIST(EX01.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.     EX01.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA
+     4                 GABRIEL GOMES DA CRUZ.
+     5 INSTALLATION.   FATEC-SP.
+     6 DATE-WRITTEN.   23/11/2023.
+     7 DATE-COMPILED. 24-Nov-23 12:56.
+     8 SECURITY.       APENAS O AUTOR PODE MODIFICA-LO.
+     9*REMARKS.        FAZER O BALANCE-LINE, GERANDO UM ARQUIVO DE
+    10*                SAIDA A PARTIR DE DOIS ARQUIVOS DE ENTRADA.
+    11
+    12 ENVIRONMENT DIVISION.
+    13 CONFIGURATION SECTION.
+    14 SOURCE-COMPUTER. IBM-PC.
+    15 OBJECT-COMPUTER. IBM-PC.
+    16 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    17
+    18 INPUT-OUTPUT SECTION.
+    19 FILE-CONTROL.
+    20     SELECT ARQA ASSIGN TO DISK ORGANIZATION
+    21         IS LINE SEQUENTIAL.
+    22     SELECT ARQB ASSIGN TO DISK ORGANIZATION
+    23         IS LINE SEQUENTIAL.
+    24     SELECT ARQC ASSIGN TO DISK ORGANIZATION
+    25         IS LINE SEQUENTIAL.
+    26
+    27 DATA DIVISION.
+    28 FILE SECTION.
+    29
+    30 FD ARQA LABEL RECORD ARE STANDARD
+    31     VALUE OF FILE-ID IS "ARQA.DAT".
+    32 01 REG-ARQA.
+    33     02 COD-ARQA    PIC 9(03).
+    34     02 NOME-ARQA   PIC X(30).
+    35     02 TURMA-ARQA  PIC X(20).
+    36
+    37 FD ARQB LABEL RECORD ARE STANDARD
+    38     VALUE OF FILE-ID IS "ARQB.DAT".
+    39 01 REG-ARQB.
+    40     02 COD-ARQB    PIC 9(03).
+    41     02 NOME-ARQB   PIC X(30).
+    42     02 TURMA-ARQB  PIC X(20).
+    43
+    44 FD ARQC LABEL RECORD ARE STANDARD
+    45     VALUE OF FILE-ID IS "ARQC.DAT".
+    46 01 REG-ARQC.
+    47     02 COD-ARQC    PIC 9(03).
+    48     02 NOME-ARQC   PIC X(30).
+    49     02 TURMA-ARQC  PIC X(20).
+    50
+    51 WORKING-STORAGE SECTION.
+    52 77 FIM-ARQ    PIC 9(01) VALUE 0.
+    53 77 CH-ARQA    PIC X(04) VALUE SPACES.
+    54 77 CH-ARQB    PIC X(04) VALUE SPACES.
+    55
+    56 PROCEDURE DIVISION.
+    57 PGM-EX01.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 24-Nov-23 12:56 Page   2
+*                                       EX01.CBL
+    58     PERFORM INICIO.
+    59     PERFORM PRINCIPAL UNTIL CH-ARQA EQUAL CH-ARQB AND
+    60         CH-ARQA EQUAL HIGH-VALUES.
+    61     PERFORM TERMINO.
+    62     STOP RUN.
+    63
+    64 INICIO.
+    65     OPEN INPUT ARQA ARQB OUTPUT ARQC.
+    66     PERFORM LER-A.
+    67     PERFORM LER-B.
+    68
+    69 LER-A.
+    70     READ ARQA AT END MOVE HIGH-VALUES TO CH-ARQA.
+    71     IF CH-ARQA EQUAL HIGH-VALUES
+    72           NEXT SENTENCE
+    73     ELSE
+    74           MOVE COD-ARQA TO CH-ARQA
+    75     END-IF.
+    76
+    77 LER-B.
+    78     READ ARQB AT END MOVE HIGH-VALUES TO CH-ARQB.
+    79     IF CH-ARQB EQUAL HIGH-VALUES
+    80           NEXT SENTENCE
+    81     ELSE
+    82           MOVE COD-ARQB TO CH-ARQB
+    83     END-IF.
+    84
+    85 PRINCIPAL.
+    86     IF CH-ARQA EQUAL CH-ARQB
+    87         PERFORM A-IGUAL-B
+    88         PERFORM LER-A
+    89         PERFORM LER-B
+    90     ELSE
+    91         IF CH-ARQA GREATER CH-ARQB
+    92             PERFORM B-MENOR
+    93             PERFORM LER-B
+    94         ELSE
+    95             PERFORM A-MENOR
+    96             PERFORM LER-A
+    97         END-IF
+    98     END-IF.
+    99
+   100 A-IGUAL-B.
+   101     PERFORM GRAVAR-A.
+   102     PERFORM GRAVAR-B.
+   103
+   104 B-MENOR.
+   105     PERFORM GRAVAR-B.
+   106
+   107 A-MENOR.
+   108     PERFORM GRAVAR-A.
+   109
+   110 GRAVAR-A.
+   111     MOVE COD-ARQA TO COD-ARQC.
+   112     MOVE NOME-ARQA TO NOME-ARQC.
+   113     MOVE TURMA-ARQA TO TURMA-ARQC.
+   114     WRITE REG-ARQC.
+   115
+* Microsoft COBOL Version 4.5        L2.4 revision 002 24-Nov-23 12:56 Page   3
+*                                       EX01.CBL
+   116 GRAVAR-B.
+   117     MOVE COD-ARQB   TO COD-ARQC.
+   118     MOVE NOME-ARQB  TO NOME-ARQC.
+   119     MOVE TURMA-ARQB TO TURMA-ARQC.
+   120     WRITE REG-ARQC.
+   121
+   122 TERMINO.
+   123     CLOSE ARQA ARQB ARQC.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1328     Code:         571     Dictionary:        1637

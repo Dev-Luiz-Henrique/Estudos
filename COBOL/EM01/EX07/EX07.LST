@@ -1,0 +1,102 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 08-Sep-23 12:46 Page   1
+*                                       EX07.CBL
+* Options: LIST(EX07.LST) ASMLIST(EX07.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.        EX06.
+     3 AUTHOR.            LUIZ HENRIQUE DE SANTANA.
+     4 INSTALLATION.      FATEC-SP.
+     5 DATE-WRITTEN.      08/09/2023.
+     6 DATE-COMPILED. 08-Sep-23 12:46.
+     7 SECURITY.          APENAS O AUTOR PODE MODIFICAR.
+     8*REMARKS.           LER O ARQUIVO DE ENTRADA CADALU (NUMERO,
+     9*                   NOME, NOTA1, NOTA2, NOTA3, NOTA4 E SEXO),
+    10*                   CALCULAR A MEDIA E GRAVAR NO ARQUIVO DE
+    11*                   SAIDA CADATU (NUMERO, NOME, MEDIA E SEXO)
+    12*                   APENAS CASO O SEXO SEJA FEMININO.
+    13
+    14 ENVIRONMENT DIVISION.
+    15 CONFIGURATION SECTION.
+    16     SOURCE-COMPUTER.   LG-PC.
+    17     OBJECT-COMPUTER.   IBM-PC.
+    18     SPECIAL-NAMES.     DECIMAL-POINT IS COMMA.
+    19
+    20 INPUT-OUTPUT SECTION.
+    21     FILE-CONTROL.
+    22     SELECT CADALU ASSIGN TO DISK ORGANIZATION
+    23         IS LINE SEQUENTIAL.
+    24     SELECT CADATU ASSIGN TO DISK ORGANIZATION
+    25         IS LINE SEQUENTIAL.
+    26
+    27 DATA DIVISION.
+    28 FILE SECTION.
+    29     FD CADALU LABEL RECORD ARE STANDARD VALUE OF FILE-ID
+    30         IS "CADALU.DAT".
+    31
+    32     01 REG-ENT.
+    33     02 NUM-ENT      PIC 9(05).
+    34     02 NOME-ENT     PIC X(20).
+    35     02 NOTA1-ENT    PIC 9(02)V99.
+    36     02 NOTA2-ENT    PIC 9(02)V99.
+    37     02 NOTA3-ENT    PIC 9(02)V99.
+    38     02 NOTA4-ENT    PIC 9(02)V99.
+    39     02 SEXO-ENT     PIC X(01).
+    40
+    41     FD CADATU LABEL RECORD ARE STANDARD VALUE OF FILE-ID
+    42         IS "CADATU.DAT".
+    43
+    44     01 REG-SAI.
+    45     02 NUM-SAI      PIC 9(05).
+    46     02 NOME-SAI     PIC X(20).
+    47     02 MEDIA-SAI    PIC 9(02)V99.
+    48     02 SEXO-SAI     PIC X(01).
+    49
+    50 WORKING-STORAGE SECTION.
+    51     77 FIM-ARQ      PIC X(03) VALUE "NAO".
+    52     77 SOMA-NOTA    PIC 9(02)V99 VALUE ZEROS.
+    53     77 WMEDIA       PIC 9(02)V99 VALUE ZEROS.
+    54
+    55 PROCEDURE DIVISION.
+    56 PGM-EX07.
+    57     PERFORM INICIO.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 08-Sep-23 12:46 Page   2
+*                                       EX07.CBL
+    58     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+    59     PERFORM TERMINO.
+    60     STOP RUN.
+    61
+    62 INICIO.
+    63     OPEN INPUT CADALU OUTPUT CADATU.
+    64     PERFORM LEITURA.
+    65
+    66 LEITURA.
+    67     READ CADALU AT END MOVE "SIM" TO FIM-ARQ.
+    68
+    69 PRINCIPAL.
+    70     PERFORM SELECAO.
+    71     PERFORM LEITURA.
+    72
+    73 SELECAO.
+    74     IF SEXO-ENT EQUAL "F" OR "f"
+    75         PERFORM CALCMEDIA
+    76         PERFORM GRAVACAO.
+    77
+    78 CALCMEDIA.
+    79     ADD NOTA1-ENT NOTA2-ENT NOTA3-ENT NOTA4-ENT
+    80         GIVING SOMA-NOTA.
+    81     DIVIDE SOMA-NOTA BY 4 GIVING WMEDIA.
+    82
+    83 GRAVACAO.
+    84     MOVE NUM-ENT TO NUM-SAI.
+    85     MOVE NOME-ENT TO NOME-SAI.
+    86     MOVE WMEDIA TO MEDIA-SAI.
+    87     MOVE SEXO-ENT TO SEXO-SAI.
+    88     WRITE REG-SAI.
+    89
+    90 TERMINO.
+    91     CLOSE CADALU CADATU.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1056     Code:         387     Dictionary:        1397

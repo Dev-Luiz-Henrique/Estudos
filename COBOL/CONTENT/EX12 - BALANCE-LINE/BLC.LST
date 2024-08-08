@@ -1,0 +1,125 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 21-Nov-23 08:20 Page   1
+*                                       BLC.CBL
+* Options: LIST(BLC.LST) ASMLIST(BLC.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.     BLC.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA.
+     4 INSTALLATION.   FATEC-SP.
+     5 DATE-WRITTEN.   21/11/2023.
+     6 DATE-COMPILED. 21-Nov-23 08:20.
+     7 SECURITY.       APENAS O AUTOR PODE MODIFICA-LO.
+     8*REMARKS. FAZ O BALANCE-LINE, GERANDO UM ARQUIVO DE SAIDA.
+     9
+    10 ENVIRONMENT DIVISION.
+    11 CONFIGURATION SECTION.
+    12 SOURCE-COMPUTER. IBM-PC.
+    13 OBJECT-COMPUTER. IBM-PC.
+    14 SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    15
+    16 INPUT-OUTPUT SECTION.
+    17 FILE-CONTROL.
+    18     SELECT MVTO ASSIGN TO DISK
+    19         ORGANIZATION IS LINE SEQUENTIAL.
+    20     SELECT ANT ASSIGN TO DISK
+    21         ORGANIZATION IS LINE SEQUENTIAL.
+    22     SELECT ATU ASSIGN TO DISK
+    23         ORGANIZATION IS LINE SEQUENTIAL.
+    24
+    25 DATA DIVISION.
+    26 FILE SECTION.
+    27 FD MVTO LABEL RECORD ARE STANDARD
+    28  VALUE OF FILE-ID IS "MVTO.DAT".
+    29 01 REG-MVTO.
+    30   02 COD-MVTO   PIC 9(04).
+    31   02 NOME-MVTO  PIC X(30).
+    32
+    33 FD ANT LABEL RECORD ARE STANDARD
+    34  VALUE OF FILE-ID IS "ANT.DAT".
+    35 01 REG-ANT.
+    36   02 COD-ANT    PIC 9(04).
+    37   02 NOME-ANT   PIC X(30).
+    38
+    39 FD ATU LABEL RECORD ARE STANDARD
+    40  VALUE OF FILE-ID IS "ATU.DAT".
+    41 01 REG-ATU.
+    42   02 COD-ATU    PIC 9(04).
+    43   02 NOME-ATU   PIC X(30).
+    44
+    45 WORKING-STORAGE SECTION.
+    46 77 CH-MVTO  PIC X(04) VALUE SPACES.
+    47 77 CH-ANT   PIC X(04) VALUE SPACES.
+    48
+    49 PROCEDURE DIVISION.
+    50 PGM-BLC.
+    51     PERFORM INICIO.
+    52     PERFORM PRINCIPAL UNTIL CH-MVTO EQUAL CH-ANT AND
+    53         CH-ANT EQUAL HIGH-VALUES.
+    54     PERFORM FIM.
+    55     STOP RUN.
+    56
+    57 INICIO.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 21-Nov-23 08:20 Page   2
+*                                       BLC.CBL
+    58     OPEN INPUT MVTO ANT OUTPUT ATU.
+    59     PERFORM LER-MVTO.
+    60     PERFORM LER-ANT.
+    61
+    62 LER-MVTO.
+    63     READ MVTO AT END MOVE HIGH-VALUES TO CH-MVTO.
+    64
+    65     IF CH-MVTO EQUAL HIGH-VALUES
+    66         NEXT SENTENCE
+    67     ELSE
+    68         MOVE COD-MVTO TO CH-MVTO.
+    69
+    70 LER-ANT.
+    71     READ ANT AT END MOVE HIGH-VALUES TO CH-ANT.
+    72
+    73     IF CH-ANT EQUAL HIGH-VALUES
+    74         NEXT SENTENCE
+    75     ELSE
+    76         MOVE COD-ANT TO CH-ANT.
+    77
+    78 PRINCIPAL.
+    79     IF CH-MVTO EQUAL CH-ANT
+    80         PERFORM IGUAL
+    81         PERFORM LER-MVTO
+    82         PERFORM LER-ANT
+    83     ELSE
+    84         IF CH-MVTO LESS CH-ANT
+    85             PERFORM MVTO-MENOR
+    86             PERFORM LER-MVTO
+    87     ELSE
+    88             PERFORM ANT-MENOR
+    89             PERFORM LER-ANT.
+    90
+    91 IGUAL.
+    92     PERFORM GRAVA-MVTO.
+    93     PERFORM GRAVA-ANT.
+    94
+    95 MVTO-MENOR.
+    96     PERFORM GRAVA-MVTO.
+    97
+    98 ANT-MENOR.
+    99     PERFORM GRAVA-ANT.
+   100
+   101 GRAVA-ANT.
+   102     MOVE COD-ANT TO COD-ATU.
+   103     MOVE NOME-ANT TO NOME-ATU.
+   104     WRITE REG-ATU.
+   105
+   106 GRAVA-MVTO.
+   107     MOVE COD-MVTO TO COD-ATU.
+   108     MOVE NOME-MVTO TO NOME-ATU.
+   109     WRITE REG-ATU.
+   110
+   111 FIM.
+   112     CLOSE MVTO ANT ATU.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+* Microsoft COBOL Version 4.5        L2.4 revision 002 21-Nov-23 08:20 Page   3
+*                                       BLC.CBL
+*
+* Total Messages:     0
+* Data:        1248     Code:         557     Dictionary:        1481

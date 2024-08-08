@@ -1,0 +1,86 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 05-Sep-23 14:24 Page   1
+*                                     DECISAO.CBL
+* Options: LIST(DECISAO.LST) NOASMLIST
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID. DECISAO.
+     3 AUTHOR. LUIZ/CARLOS.
+     4 INSTALLATION. FATEC-SP.
+     5 DATE-WRITTEN. 29/08/2023.
+     6 DATE-COMPILED. 05-Sep-23 14:24.
+     7 SECURITY. MEU LUIZAO.
+     8*REMARKS. Q.
+     9
+    10 ENVIRONMENT DIVISION.
+    11 CONFIGURATION SECTION.
+    12     SOURCE-COMPUTER. HP-PC.
+    13     OBJECT-COMPUTER. HP-PC.
+    14     SPECIAL-NAMES. DECIMAL-POINT IS COMMA.
+    15 INPUT-OUTPUT SECTION.
+    16
+    17     FILE-CONTROL.
+    18         SELECT CAD-ENT ASSIGN TO DISK ORGANIZATION IS
+    19         LINE SEQUENTIAL.
+    20
+    21         SELECT CAD-SAI ASSIGN TO DISK ORGANIZATION IS
+    22         LINE SEQUENTIAL.
+    23
+    24 DATA DIVISION.
+    25 FILE SECTION.
+    26 FD CAD-ENT
+    27     LABEL RECORD ARE STANDARD
+    28     VALUE OF FILE-ID IS "CAD-ENT.DAT".
+    29
+    30 01 REG-ENT.
+    31     02 CODIGO-ENT PIC 9(04).
+    32     02 NOME-ENT   PIC X(030).
+    33     02 SEXO-ENT   PIC X(01).
+    34 FD CAD-SAI
+    35     LABEL RECORD ARE STANDARD
+    36     VALUE OF FILE-ID IS "CAD-SAI.DAT".
+    37
+    38    01 REG-SAI.
+    39     02 CODIGO-SAI PIC 9(04).
+    40     02 NOME-SAI   PIC X(030).
+    41 WORKING-STORAGE SECTION.
+    42     77 FIM-ARQ PIC X(03) VALUE "NAO".
+    43
+    44 PROCEDURE DIVISION.
+    45 PGM-DECISAO.
+    46     PERFORM INICIO.
+    47     PERFORM PRINCIPAL
+    48         UNTIL FIM-ARQ EQUAL "SIM".
+    49     PERFORM TERMINO.
+    50     STOP RUN.
+    51
+    52 INICIO.
+    53     OPEN INPUT CAD-ENT
+    54         OUTPUT CAD-SAI.
+    55     PERFORM LEITURA.
+    56 LEITURA.
+    57     READ CAD-ENT
+* Microsoft COBOL Version 4.5        L2.4 revision 002 05-Sep-23 14:24 Page   2
+*                                     DECISAO.CBL
+    58         AT END MOVE "SIM" TO FIM-ARQ.
+    59 PRINCIPAL.
+    60     PERFORM SELECAO.
+    61     PERFORM LEITURA.
+    62 SELECAO.
+    63     IF SEXO-ENT EQUAL "F" OR "f"
+    64         PERFORM GRAVACAO.
+    65 GRAVACAO.
+    66     MOVE CODIGO-ENT TO CODIGO-SAI.
+    67     MOVE NOME-ENT TO NOME-SAI.
+    68     WRITE REG-SAI.
+    69 TERMINO.
+    70     CLOSE CAD-ENT CAD-SAI.
+    71
+    72
+    73
+    74
+    75
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1032     Code:         330     Dictionary:        1079

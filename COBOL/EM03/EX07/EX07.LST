@@ -1,0 +1,351 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 18:38 Page   1
+*                                       EX07.CBL
+* Options: LIST(EX07.LST) ASMLIST(EX07.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.     EX07.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA
+     4                 GABRIEL GOMES DA CRUZ
+     5                 NICOLE CARVALHO FUKUSHIMA.
+     6 INSTALLATION.   FATEC-SP.
+     7 DATE-WRITTEN.   13/11/2023.
+     8 DATE-COMPILED. 13-Nov-23 18:38.
+     9 SECURITY.       APENAS O AUTOR PODE MODIFICA-LO.
+    10*REMARKS         LER O ARQUIVO DE ENTRADA CADALU E GERAR O
+    11*                RELATORIO DE SAIDA RELALU, ORDENANDO-O POR
+    12*                CODIGO E TURMA EM ORDEM ASCENDENTE, ALEM DE
+    13*                CALCULAR A MEDIA DOS ALUNOS E EXIBIR OS
+    14*                APROVADOS E REPROVADOS.
+    15
+    16
+    17*================================================================*
+    18
+    19
+    20 ENVIRONMENT DIVISION.
+    21 CONFIGURATION SECTION.
+    22 SOURCE-COMPUTER.    IBM-PC.
+    23 OBJECT-COMPUTER.    IBM-PC.
+    24 SPECIAL-NAMES.      DECIMAL-POINT IS COMMA.
+    25
+    26 INPUT-OUTPUT SECTION.
+    27 FILE-CONTROL.
+    28 SELECT CADALU ASSIGN TO DISK ORGANIZATION IS LINE SEQUENTIAL.
+    29 SELECT TRAB ASSIGN TO DISK.
+    30 SELECT RELALU ASSIGN TO DISK.
+    31
+    32
+    33*================================================================*
+    34
+    35
+    36 DATA DIVISION.
+    37 FILE SECTION.
+    38 FD CADALU LABEL RECORD ARE STANDARD
+    39     VALUE OF FILE-ID IS "CADALU.DAT".
+    40 01 REG-ENT.
+    41     02 TURMA-ENT        PIC 9(03).
+    42     02 COD-ENT          PIC 9(07).
+    43     02 NOME-ENT         PIC X(30).
+    44     02 NOTA1-ENT        PIC 99V99.
+    45     02 NOTA2-ENT        PIC 99V99.
+    46     02 NOTA3-ENT        PIC 99V99.
+    47     02 NOTA4-ENT        PIC 99V99.
+    48
+    49
+    50*================================================================*
+    51
+    52
+    53 SD TRAB.
+    54 01 REG-TRAB.
+    55     02 TURMA-TRAB       PIC 9(03).
+    56     02 COD-TRAB         PIC 9(07).
+    57     02 COD-TRAB-RED REDEFINES COD-TRAB.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 18:38 Page   2
+*                                       EX07.CBL
+    58       03 COD1-TRAB      PIC 9(03).
+    59       03 COD2-TRAB      PIC 9(03).
+    60       03 COD3-TRAB      PIC 9.
+    61     02 NOME-TRAB        PIC X(30).
+    62     02 NOTA1-TRAB        PIC 99V99.
+    63     02 NOTA2-TRAB        PIC 99V99.
+    64     02 NOTA3-TRAB        PIC 99V99.
+    65     02 NOTA4-TRAB        PIC 99V99.
+    66
+    67 FD RELALU LABEL RECORD IS OMITTED.
+    68 01 REG-ATR.
+    69     02 REL-ATR          PIC X(80).
+    70
+    71 WORKING-STORAGE SECTION.
+    72 77 PERMIT-ROD-TURMA     PIC 9 VALUE ZEROS.
+    73 77 FIM-ARQ              PIC X(03) VALUE "NAO".
+    74 77 CT-LIN               PIC 99 VALUE 0.
+    75 77 CT-PAG               PIC 99 VALUE ZEROS.
+    76
+    77 77 CT-SOMA              PIC 99V99 VALUE ZEROS.
+    78 77 CT-MEDIA             PIC 99V999 VALUE ZEROS.
+    79 77 CT-REPROVADOS        PIC 99V99 VALUE ZEROS.
+    80 77 CT-APROVADOS         PIC 99V99 VALUE ZEROS.
+    81 77 WTURMA               PIC 999.
+    82 77 SOMA-GERAL           PIC 9(03)V99.
+    83 77 WMEDIA-GERAL         PIC 9(02)V99.
+    84 77 WALUNOS-TURMA        PIC 9(03).
+    85
+    86
+    87*================================================================*
+    88
+    89
+    90 01 CAB-TITULO.
+    91     02 FILLER           PIC X(30) VALUE SPACES.
+    92     02 FILLER           PIC X(19) VALUE "RELAÇÃO DE ALUNOS".
+    93     02 FILLER           PIC X(23) VALUE SPACES.
+    94     02 FILLER           PIC X(05) VALUE "PAG. ".
+    95     02 VAR-PAG          PIC 9(03).
+    96
+    97
+    98*================================================================*
+    99
+   100
+   101 01 CAB-TURMA.
+   102     02 FILLER           PIC X(07) VALUE "TURMA: ".
+   103     02 VAR-TURMA        PIC 9(03).
+   104     02 FILLER           PIC X(70) VALUE SPACES.
+   105
+   106
+   107*================================================================*
+   108
+   109
+   110 01 CAB-DADOS.
+   111     02 FILLER           PIC X(03) VALUE SPACES.
+   112     02 FILLER           PIC X(06) VALUE "CODIGO".
+   113     02 FILLER           PIC X(28) VALUE SPACES.
+   114     02 FILLER           PIC X(04) VALUE "NOME".
+   115     02 FILLER           PIC X(32) VALUE SPACES.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 18:38 Page   3
+*                                       EX07.CBL
+   116     02 FILLER           PIC X(06) VALUE "MEDIA ".
+   117
+   118
+   119*================================================================*
+   120
+   121
+   122 01 DETALHE.
+   123     02 FILLER           PIC X(01) VALUE SPACES.
+   124     02 VAR-COD1         PIC 9(03).
+   125     02 FILLER           PIC X(01) VALUE ".".
+   126     02 VAR-COD2         PIC 9(03).
+   127     02 FILLER           PIC X(01) VALUE "-".
+   128     02 VAR-COD3         PIC 9.
+   129     02 FILLER           PIC X(13) VALUE SPACES.
+   130     02 VAR-NOME         PIC X(30).
+   131     02 FILLER           PIC X(20) VALUE SPACES.
+   132     02 VAR-MEDIA        PIC Z9,99 VALUE ZEROES.
+   133     02 FILLER           PIC X(01) VALUE SPACES.
+   134
+   135
+   136*================================================================*
+   137
+   138
+   139 01 RODAPE-APROVADOS.
+   140     02 FILLER           PIC X(47) VALUE SPACES.
+   141     02 FILLER           PIC X(27)
+   142        VALUE "TOTAL DE ALUNOS APROVADOS  ".
+   143     02 VAR-APROVADOS    PIC 9(4).
+   144     02 FILLER           PIC X(01) VALUE SPACES.
+   145
+   146
+   147*================================================================*
+   148
+   149
+   150 01 RODAPE-REPROVADOS.
+   151     02 FILLER           PIC X(46) VALUE SPACES.
+   152     02 FILLER           PIC X(28)
+   153       VALUE "TOTAL DE ALUNOS REPROVADOS  ".
+   154     02 VAR-REPROVADOS   PIC 9(04).
+   155     02 FILLER           PIC X(01) VALUE SPACES.
+   156
+   157
+   158*================================================================*
+   159
+   160
+   161 01 RODAPE-MEDIA.
+   162     02 FILLER           PIC X(61) VALUE SPACES.
+   163     02 FILLER           PIC X(12) VALUE "MEDIA GERAL ".
+   164     02 VAR-MEDIA-GERAL  PIC Z9,99.
+   165     02 FILLER           PIC X(01) VALUE SPACES.
+   166
+   167
+   168*================================================================*
+   169
+   170
+   171 PROCEDURE DIVISION.
+   172 PGM-EX07.
+   173 SORT TRAB
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 18:38 Page   4
+*                                       EX07.CBL
+   174     ASCENDING KEY TURMA-TRAB, COD-TRAB
+   175     USING CADALU
+   176     OUTPUT PROCEDURE ROT-SAI.
+   177 STOP RUN.
+   178
+   179
+   180*================================================================*
+   181
+   182 ROT-SAI SECTION.
+   183     PERFORM INICIO.
+   184     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+   185     PERFORM FIM.
+   186
+   187
+   188*================================================================*
+   189
+   190
+   191 INICIO SECTION.
+   192     OPEN OUTPUT RELALU
+   193     PERFORM LEITURA.
+   194
+   195
+   196*================================================================*
+   197
+   198
+   199 LEITURA SECTION.
+   200     RETURN TRAB AT END MOVE "SIM" TO FIM-ARQ.
+   201
+   202
+   203*================================================================*
+   204
+   205
+   206 PRINCIPAL SECTION.
+   207     PERFORM IMPRESSAO.
+   208     PERFORM LEITURA.
+   209
+   210
+   211*================================================================*
+   212
+   213
+   214 CALCULO-MEDIA SECTION.
+   215     ADD NOTA1-TRAB NOTA2-TRAB NOTA3-TRAB NOTA4-TRAB
+   216         GIVING CT-SOMA.
+   217     DIVIDE CT-SOMA BY 4 GIVING CT-MEDIA.
+   218
+   219
+   220     IF CT-MEDIA NOT LESS THAN 7
+   221         ADD 1 TO CT-APROVADOS
+   222     ELSE
+   223         ADD 1 TO CT-REPROVADOS
+   224     END-IF.
+   225
+   226     ADD 1 TO WALUNOS-TURMA.
+   227     ADD CT-MEDIA TO SOMA-GERAL.
+   228
+   229
+   230*================================================================*
+   231
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 18:38 Page   5
+*                                       EX07.CBL
+   232
+   233 IMPRESSAO SECTION.
+   234     IF CT-LIN GREATER THAN 40
+   235         PERFORM IMPRESSAO-TITULO.
+   236
+   237     IF WTURMA NOT EQUAL TURMA-TRAB
+   238         IF PERMIT-ROD-TURMA EQUAL 1
+   239             PERFORM IMP-ROD-TOT-APROV
+   240             PERFORM IMP-ROD-TOT-REPROV
+   241             PERFORM IMP-ROD-MED-GERAL
+   242             MOVE ZEROES TO CT-MEDIA
+   243             MOVE ZEROES TO CT-APROVADOS
+   244             MOVE ZEROES TO CT-REPROVADOS
+   245         ELSE
+   246             MOVE 1 TO PERMIT-ROD-TURMA
+   247         END-IF
+   248
+   249         PERFORM IMPRESSAO-TITULO
+   250         PERFORM IMPRESSAO-TURMA
+   251         PERFORM IMPRESSAO-DADOS
+   252         MOVE TURMA-TRAB TO WTURMA
+   253     END-IF.
+   254
+   255
+   256     PERFORM CALCULO-MEDIA.
+   257     PERFORM IMPRESSAO-DETALHE.
+   258
+   259
+   260*================================================================*
+   261
+   262
+   263 IMPRESSAO-TITULO SECTION.
+   264     ADD 1 TO CT-PAG.
+   265     MOVE CT-PAG TO VAR-PAG.
+   266     MOVE SPACES TO REG-ATR.
+   267     WRITE REG-ATR FROM CAB-TITULO AFTER ADVANCING 2 LINES.
+   268     MOVE ZEROES TO CT-LIN.
+   269
+   270
+   271*================================================================*
+   272
+   273 IMPRESSAO-TURMA SECTION.
+   274     MOVE TURMA-TRAB TO VAR-TURMA.
+   275     WRITE REG-ATR FROM CAB-TURMA AFTER ADVANCING 2 LINES.
+   276
+   277
+   278*================================================================*
+   279
+   280 IMPRESSAO-DADOS SECTION.
+   281     WRITE REG-ATR FROM CAB-DADOS AFTER ADVANCING 2 LINES.
+   282
+   283
+   284*================================================================*
+   285
+   286
+   287 IMPRESSAO-DETALHE SECTION.
+   288     MOVE COD1-TRAB TO VAR-COD1.
+   289     MOVE COD2-TRAB TO VAR-COD2.
+* Microsoft COBOL Version 4.5        L2.4 revision 002 13-Nov-23 18:38 Page   6
+*                                       EX07.CBL
+   290     MOVE COD3-TRAB TO VAR-COD3.
+   291     MOVE NOME-TRAB TO VAR-NOME.
+   292     MOVE CT-MEDIA  TO VAR-MEDIA.
+   293     WRITE REG-ATR FROM DETALHE AFTER ADVANCING 1 LINE.
+   294
+   295
+   296*================================================================*
+   297
+   298
+   299 IMP-ROD-TOT-APROV SECTION.
+   300     MOVE CT-APROVADOS TO VAR-APROVADOS.
+   301     WRITE REG-ATR FROM RODAPE-APROVADOS
+   302         AFTER ADVANCING 2 LINES.
+   303
+   304
+   305*================================================================*
+   306
+   307
+   308 IMP-ROD-TOT-REPROV SECTION.
+   309     MOVE CT-REPROVADOS TO VAR-REPROVADOS.
+   310     WRITE REG-ATR FROM RODAPE-REPROVADOS
+   311         AFTER ADVANCING 1 LINE.
+   312
+   313
+   314*================================================================*
+   315
+   316
+   317 IMP-ROD-MED-GERAL SECTION.
+   318     MOVE CT-MEDIA TO VAR-MEDIA-GERAL.
+   319     WRITE REG-ATR FROM RODAPE-MEDIA AFTER ADVANCING 1 LINE.
+   320
+   321
+   322*================================================================*
+   323
+   324
+   325 FIM SECTION.
+   326     PERFORM IMP-ROD-TOT-APROV
+   327     PERFORM IMP-ROD-TOT-REPROV
+   328     PERFORM IMP-ROD-MED-GERAL.
+   329     CLOSE RELALU.
+   330
+   331
+   332*================================================================*
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        2004     Code:        1027     Dictionary:        3713

@@ -1,0 +1,95 @@
+* Microsoft COBOL Version 4.5        L2.4 revision 002 31-Oct-23 10:20 Page   1
+*                                       SRT.CBL
+* Options: LIST(SRT.LST) ASMLIST(SRT.GRP)
+     1 IDENTIFICATION DIVISION.
+     2 PROGRAM-ID.     EXSRT.
+     3 AUTHOR.         LUIZ HENRIQUE DE SANTANA.
+     4 INSTALLATION.   FATEC-SP.
+     5 DATE-WRITTEN.   31/10/2023.
+     6 DATE-COMPILED. 31-Oct-23 10:20.
+     7 SECURITY.       APENAS O AUTOR PODE MODIFICA-LO.
+     8*REMARKS. FAZ O SORT DO ARQUIVO DE ENTRADA.
+     9*            USANDO USING E OUTPUT.
+    10*            SELECIONAR SOMENTE PESSOA DO SEXO
+    11*            FEMININO (F) GERANDO COMO SAIDA UM
+    12*            ARQUIVO CLASSIFICADO.
+    13
+    14 ENVIRONMENT DIVISION.
+    15 CONFIGURATION SECTION.
+    16     SOURCE-COMPUTER. IBM-PC.
+    17     OBJECT-COMPUTER. IBM-PC.
+    18     SPECIAL-NAMES.   DECIMAL-POINT IS COMMA.
+    19 INPUT-OUTPUT SECTION.
+    20 FILE-CONTROL.
+    21     SELECT ENTRADA ASSIGN TO DISK
+    22         ORGANIZATION IS LINE SEQUENTIAL.
+    23     SELECT TRAB ASSIGN TO DISK.
+    24     SELECT SAIDA ASSIGN TO DISK
+    25         ORGANIZATION IS LINE SEQUENTIAL.
+    26 DATA DIVISION.
+    27 FILE SECTION.
+    28     FD ENTRADA LABEL RECORD ARE STANDARD
+    29         VALUE OF FILE-ID IS "ENT.DAT".
+    30     01 REG-ENT.
+    31       02 COD-ENT    PIC 9(04).
+    32       02 SEXO-ENT   PIC X(01).
+    33       02 NOME-ENT   PIC X(30).
+    34
+    35     SD TRAB.
+    36     01 REG-TRAB.
+    37       02 COD-TRAB   PIC 9(04).
+    38       02 SEXO-TRAB  PIC X(01).
+    39       02 NOME-TRAB  PIC X(30).
+    40
+    41     FD SAIDA LABEL RECORD ARE STANDARD
+    42         VALUE OF FILE-ID IS "SAI.DAT".
+    43     01 REG-SAI.
+    44       02 COD-SAI    PIC 9(04).
+    45       02 SEXO-SAI   PIC X(01).
+    46       02 NOME-SAI   PIC X(30).
+    47
+    48 working-storage section.
+    49 77 FIM-ARQ PIC X(03) VALUE "NAO".
+    50
+    51 PROCEDURE DIVISION.
+    52 PGM-EXSRT.
+    53     SORT TRAB ASCENDING KEY COD-TRAB
+    54         USING ENTRADA
+    55         OUTPUT PROCEDURE ROT-SAIDA
+    56     STOP RUN.
+    57
+* Microsoft COBOL Version 4.5        L2.4 revision 002 31-Oct-23 10:20 Page   2
+*                                       SRT.CBL
+    58 ROT-SAIDA SECTION.
+    59     PERFORM INICIO.
+    60     PERFORM PRINCIPAL UNTIL FIM-ARQ EQUAL "SIM".
+    61     PERFORM FIM.
+    62
+    63 INICIO SECTION.
+    64     OPEN OUTPUT SAIDA.
+    65     PERFORM LE-SORT.
+    66
+    67 LE-SORT SECTION.
+    68     RETURN TRAB AT END MOVE "SIM" TO FIM-ARQ.
+    69
+    70 PRINCIPAL SECTION.
+    71     PERFORM SELECAO.
+    72     PERFORM LE-SORT.
+    73
+    74 SELECAO SECTION.
+    75     IF SEXO-TRAB EQUAL "F"
+    76         PERFORM GRAVACAO.
+    77 GRAVACAO SECTION.
+    78     MOVE COD-TRAB TO COD-SAI.
+    79     MOVE SEXO-TRAB TO SEXO-SAI.
+    80     MOVE NOME-TRAB TO NOME-SAI.
+    81     WRITE REG-SAI.
+    82
+    83 FIM SECTION.
+    84     CLOSE SAIDA.
+* Microsoft COBOL Version 4.5        L2.4 revision 002
+* (C)Copyright Microsoft Corp 1984, 1991       URN AXUPA/MS0/000000
+*                                              REF GNB-024050002A7
+*
+* Total Messages:     0
+* Data:        1244     Code:         499     Dictionary:        1567
