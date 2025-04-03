@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">CalculadoraAPI</string>
+
+    <string name="label_calculator">Calculadora</string>
+    <string name="label_history">Histórico</string>
+    <string name="label_delete">Excluir</string>
+    <string name="label_id">Id:</string>
+    <string name="label_date">Data:</string>
+    <string name="label_value_a">Valor A:</string>
+    <string name="label_value_b">Valor B:</string>
+    <string name="label_operation">Operação:</string>
+    <string name="label_result">Resultado:</string>
+    <string name="label_addition">Soma</string>
+    <string name="label_subtraction">Subtração</string>
+    <string name="label_multiplication">Multiplicação</string>
+    <string name="label_division">Divisão</string>
+</resources>

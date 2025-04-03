@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/lblValueA"
+        android:text="@string/label_value_a"
+        android:labelFor="@id/edtValueA"
+        style="@style/CustomCalculatorLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/edtValueA"
+        app:layout_constraintEnd_toEndOf="@id/edtValueA" />
+
+    <TextView
+        android:id="@+id/lblValueB"
+        android:text="@string/label_value_b"
+        android:labelFor="@id/edtValueB"
+        style="@style/CustomCalculatorLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/edtValueB"
+        app:layout_constraintEnd_toEndOf="@id/edtValueB" />
+
+    <EditText
+        android:id="@+id/edtValueA"
+        style="@style/CustomCalculatorEditBox"
+        android:importantForAutofill="no"
+        app:layout_constraintTop_toBottomOf="@id/lblValueA"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/edtValueB" />
+
+    <EditText
+        android:id="@+id/edtValueB"
+        style="@style/CustomCalculatorEditBox"
+        android:importantForAutofill="no"
+        app:layout_constraintTop_toBottomOf="@id/lblValueB"
+        app:layout_constraintStart_toEndOf="@id/edtValueA"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/buttonAdd"
+        android:text="@string/label_addition"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@id/edtValueA"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/CustomCalculatorButton" />
+
+    <Button
+        android:id="@+id/buttonSubtract"
+        android:text="@string/label_subtraction"
+        app:layout_constraintTop_toBottomOf="@id/buttonAdd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/CustomCalculatorButton" />
+
+    <Button
+        android:id="@+id/buttonMultiply"
+        android:text="@string/label_multiplication"
+        app:layout_constraintTop_toBottomOf="@id/buttonSubtract"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/CustomCalculatorButton" />
+
+    <Button
+        android:id="@+id/buttonDivide"
+        android:text="@string/label_division"
+        app:layout_constraintTop_toBottomOf="@id/buttonMultiply"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/CustomCalculatorButton" />
+</androidx.constraintlayout.widget.ConstraintLayout>
